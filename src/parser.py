@@ -40,3 +40,32 @@ def parse_ipv4_packet(data):
         "destination_ip": format_ip(dst),
         "payload": data[header_length:]
     }
+
+
+    def parse_tcp_segment(data):
+    src_port, dst_port = struct.unpack("!HH", data[:4])
+
+    return {
+        "source_port": src_port,
+        "destination_port": dst_port,
+        "payload": data[20:]  # TCP header is usually 20 bytes
+    }
+
+
+def parse_udp_segment(data):
+    src_port, dst_port, length = struct.unpack("!HHH", data[:6])
+
+    return {
+        "source_port": src_port,
+        "destination_port": dst_port,
+        "length": length,
+        "payload": data[8:]
+    }
+
+    def parse_tcp_segment(data):
+    src_port, dst_port = struct.unpack("!HH", data[:4])
+
+    return {
+        "source_port": src_port,
+        "destination_port": dst_port
+    }
