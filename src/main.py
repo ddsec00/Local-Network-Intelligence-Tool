@@ -1,3 +1,4 @@
+import argparse
 from sniffer import create_sniffer
 from parser import (
     parse_ethernet_frame,
@@ -9,6 +10,15 @@ from parser import (
 
 
 def main():
+
+    parser = argparse.ArgumentParser(description="Packet Sniffer")
+    parser.add_argument(
+        "--tcp",
+        action="store_true",
+        help="Filter only TCP packets"
+    
+    )
+    args = parser.parse_args()
     sniffer = create_sniffer()
 
     print("Packet sniffer started...")
@@ -22,6 +32,9 @@ def main():
         if eth["protocol"] == 2048:
 
             ip = parse_ipv4_packet(eth["payload"])
+
+            if args.tcp and ip["protocol"] != 6:
+                continue
 
             # ICMP (ping)
             if ip["protocol"] == 1:
