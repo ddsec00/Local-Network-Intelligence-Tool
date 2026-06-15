@@ -69,3 +69,12 @@ def parse_udp_segment(data):
         "source_port": src_port,
         "destination_port": dst_port
     }
+
+    def parse_udp_segment(data):
+        src_port, dst_port, length = struct.unpack("!HHH", data[:6])
+        return {
+            "source port": src_port
+            "destination port": dst_port
+            "length": length
+            "payload": data[8:]
+        }
