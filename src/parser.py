@@ -61,3 +61,13 @@ def parse_udp_segment(data):
         "length": length,
         "payload": data[8:]
     }
+
+    def get_service_name(port):
+        common_ports = {
+            80: "HTTP",
+            443: "HTTPS",
+            53: "DNS",
+            22: "SSH",
+            21: "FTP",
+        }
+        return common_ports.get(port, str(port))
