@@ -61,8 +61,7 @@ def parse_udp_segment(data):
         "length": length,
         "payload": data[8:]
     }
-
-    def get_service_name(port):
+def get_service_name(port):
         common_ports = {
             80: "HTTP",
             443: "HTTPS",
