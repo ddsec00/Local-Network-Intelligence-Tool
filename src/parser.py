@@ -42,7 +42,7 @@ def parse_ipv4_packet(data):
     }
 
 
-    def parse_tcp_segment(data):
+def parse_tcp_segment(data):
     src_port, dst_port = struct.unpack("!HH", data[:4])
 
     return {
@@ -61,20 +61,3 @@ def parse_udp_segment(data):
         "length": length,
         "payload": data[8:]
     }
-
-    def parse_tcp_segment(data):
-    src_port, dst_port = struct.unpack("!HH", data[:4])
-
-    return {
-        "source_port": src_port,
-        "destination_port": dst_port
-    }
-
-    def parse_udp_segment(data):
-        src_port, dst_port, length = struct.unpack("!HHH", data[:6])
-        return {
-            "source port": src_port
-            "destination port": dst_port
-            "length": length
-            "payload": data[8:]
-        }
