@@ -12,7 +12,7 @@ from parser import (
 )
 
 
-# read command line options like --tcp / --udp
+# just reading flags like --tcp or --udp from terminal
 def get_args():
     parser = argparse.ArgumentParser(description="Packet Sniffer")
 
@@ -22,18 +22,18 @@ def get_args():
     return parser.parse_args()
 
 
-# figure out what IP this machine is using
+# figuring out what IP this machine is using
 def get_local_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
-        # fake connection just to let OS pick the right interface
+        # fake connection just to let OS pick correct interface
         s.connect(("8.8.8.8", 80))
         return s.getsockname()[0]
     finally:
         s.close()
 
 
-# check if packet is going in or out of this machine
+# figuring out if packet is coming in or going out
 def get_direction(src_ip, dst_ip, local_ip):
     if src_ip == local_ip:
         return "OUT"
@@ -50,9 +50,9 @@ def main():
     local_ip = get_local_ip()
 
     print(f"Local IP: {local_ip}")
-    print("Sniffer started...\n")
+    print("Sniffer running...\n")
 
-    # simple counters so we can see traffic stats
+    # just counters so we can see traffic summary later
     total_packets = 0
     tcp_count = 0
     udp_count = 0
@@ -63,11 +63,11 @@ def main():
     while True:
         raw_data, addr = sniffer.recvfrom(65535)
 
-        total_packets += 1
+        total_packets += 1  # count every packet we see
 
         eth = parse_ethernet_frame(raw_data)
 
-        # ignore anything that's not IPv4
+        # ignore anything that's not IPv4 (we don’t care for now)
         if eth["protocol"] != 2048:
             continue
 
@@ -79,10 +79,10 @@ def main():
             local_ip
         )
 
-        # ---------------- TCP traffic ----------------
+        # ---------------- TCP ----------------
         if ip["protocol"] == 6:
 
-            # if user only wants UDP, skip TCP
+            # if user only wants UDP, skip this
             if args.udp:
                 continue
 
@@ -97,10 +97,10 @@ def main():
                 f"→ {ip['destination_ip']}:{tcp['destination_port']}"
             )
 
-        # ---------------- UDP traffic ----------------
+        # ---------------- UDP ----------------
         elif ip["protocol"] == 17:
 
-            # if user only wants TCP, skip UDP
+            # if user only wants TCP, skip this
             if args.tcp:
                 continue
 
@@ -115,12 +115,12 @@ def main():
                 f"→ {ip['destination_ip']}:{udp['destination_port']}"
             )
 
-        # anything else we don't explicitly handle
+        # anything else we don’t fully handle yet
         else:
             other_count += 1
 
-        # every 5 seconds, show a quick summary of what’s happening
-        if time.time() - last_print > 5:
+        # every 5 seconds, just show a quick summary
+        if time.time() - last_print >= 5:
             print("\n--- STATS ---")
             print(f"Total packets: {total_packets}")
             print(f"TCP: {tcp_count}")
