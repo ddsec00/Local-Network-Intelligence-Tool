@@ -9,7 +9,8 @@ from parser import (
     parse_ipv4_packet,
     parse_tcp_segment,
     parse_udp_segment,
-    get_service_name
+    get_service_name,
+    parse_icmp_packet
 )
 
 
@@ -126,11 +127,26 @@ def main():
                 f"{ip['source_ip']}:{udp['source_port']} "
                 f"→ {ip['destination_ip']}:{udp['destination_port']}"
             )
+            # ---------------- ICMP ----------------
+        elif ip["protocol"] == 1:
 
+            icmp = parse_icmp_packet(ip["payload"])
+
+            if icmp["type"] == 8:
+                icmp_name = "PING REQUEST"
+            elif icmp["type"] == 0:
+                icmp_name = "PING REPLY"
+            else:
+                icmp_name = f"ICMP TYPE {icmp['type']}"
+
+            print(
+                f"{direction} {icmp_name} "
+                f"{ip['source_ip']} → {ip['destination_ip']}"
+            )
         # ---------------- OTHER ----------------
         else:
             other_count += 1
-
+            
         # ---------------- STATS (every 5 seconds) ----------------
         if time.time() - last_print >= 5:
             print("\n--- STATS ---")

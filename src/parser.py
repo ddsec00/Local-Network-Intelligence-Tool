@@ -70,3 +70,13 @@ def get_service_name(port):
             21: "FTP",
         }
         return common_ports.get(port, str(port))
+
+def parse_icmp_packet(data):
+    icmp_type, icmp_code, checksum = struct.unpack("!BBH", data[:4])
+
+    return{
+        "type": icmp_type,
+        "code": icmp_code,
+        "checksum": checksum,
+        "payload": data[4:]
+    }
