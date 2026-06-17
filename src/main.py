@@ -53,6 +53,7 @@ def main():
 
     print(f"Local IP: {local_ip}")
     print("Sniffer running...\n")
+    log_file = open("traffic.log", "a")
 
     # counters
     total_packets = 0
@@ -146,7 +147,7 @@ def main():
         # ---------------- OTHER ----------------
         else:
             other_count += 1
-            
+
         # ---------------- STATS (every 5 seconds) ----------------
         if time.time() - last_print >= 5:
             print("\n--- STATS ---")
@@ -174,6 +175,11 @@ def main():
             print("-------------\n")
 
             last_print = time.time()
+
+            def log_packet(text):
+                log_file.write(text + "\n")
+                log_file.flush()
+
 
 
 if __name__ == "__main__":
