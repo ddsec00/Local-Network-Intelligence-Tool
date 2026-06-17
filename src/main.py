@@ -1,7 +1,7 @@
 import socket
 import argparse
 import time
-
+from collections import Counter
 from sniffer import create_sniffer
 from parser import (
     parse_ethernet_frame,
@@ -57,6 +57,9 @@ def main():
     tcp_count = 0
     udp_count = 0
     other_count = 0
+    # keep track of who talks the most
+    top_sources = Counter()
+    top_destinations = Counter()
 
     last_print = time.time()
 
@@ -72,6 +75,8 @@ def main():
             continue
 
         ip = parse_ipv4_packet(eth["payload"])
+        top_sources[ip["source_ip"]] += 1
+        top_destinations[ip["destination_ip"]] += 1
 
         direction = get_direction(
             ip["source_ip"],
@@ -128,8 +133,16 @@ def main():
             print(f"OTHER: {other_count}")
             print("-------------\n")
 
-            last_print = time.time()
+            print("\nTop Source IPs:")
+            for ip, count in top_sources.most_common(5):
+                print(f"  {ip}: {count}")
 
+            print("\nTop Destination IPs:")
+            for ip, count in top_destinations.most_common(5):
+                print(f"  {ip}: {count}")
+
+            print("-------------\n")
+            last_print = time.time()
 
 if __name__ == "__main__":
     main()
