@@ -109,11 +109,13 @@ def main():
 
             top_ports[tcp["destination_port"]] += 1
 
+            hostname = resolve_hostname(ip["destination_ip"])
+
             log_entry = (
                 f"{time.strftime('%Y-%m-%d %H:%M:%S')} "
                 f"{direction} {service} TCP "
                 f"{ip['source_ip']}:{tcp['source_port']} "
-                f"→ {resolve_hostname(ip['destination_ip'])}:{tcp['destination_port']}"
+                f"→ {ip['destination_ip']} ({hostname}):{tcp['destination_port']}"
             )
 
             print(log_entry)
@@ -132,11 +134,13 @@ def main():
 
             top_ports[udp["destination_port"]] += 1
 
+            hostname = resolve_hostname(ip["destination_ip"])
+
             log_entry = (
                 f"{time.strftime('%Y-%m-%d %H:%M:%S')} "
                 f"{direction} {service} UDP "
                 f"{ip['source_ip']}:{udp['source_port']} "
-                f"→ {resolve_hostname(ip['destination_ip'])}:{udp['destination_port']}"
+                f"→ {ip['destination_ip']} ({hostname}):{udp['destination_port']}"
             )
 
             print(log_entry)
@@ -156,10 +160,12 @@ def main():
             else:
                 icmp_name = f"ICMP TYPE {icmp['type']}"
 
+            hostname = resolve_hostname(ip["destination_ip"])
+
             log_entry = (
                 f"{time.strftime('%Y-%m-%d %H:%M:%S')} "
                 f"{direction} {icmp_name} "
-                f"{ip['source_ip']} → {resolve_hostname(ip['destination_ip'])}"
+                f"{ip['source_ip']} → {ip['destination_ip']} ({hostname})"
             )
 
             print(log_entry)
