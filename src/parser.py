@@ -80,3 +80,31 @@ def parse_icmp_packet(data):
         "checksum": checksum,
         "payload": data[4:]
     }
+
+# extract domain name from a DNS query packet
+def parse_dns_query(data):
+    try:
+        domain_parts = []
+
+        # DNS header is always 12 bytes
+        position = 12
+
+        while True:
+            length = data[position]
+
+            # length 0 means end of domain name
+            if length == 0:
+                break
+
+            position += 1
+
+            domain_parts.append(
+                data[position:position + length].decode()
+            )
+
+            position += length
+
+        return ".".join(domain_parts)
+
+    except:
+        return None
