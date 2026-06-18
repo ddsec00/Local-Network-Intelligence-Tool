@@ -10,7 +10,8 @@ from parser import (
     parse_tcp_segment,
     parse_udp_segment,
     get_service_name,
-    parse_icmp_packet
+    parse_icmp_packet,
+    parse_dns_query
 )
 
 # ---------------- ARG PARSER ----------------
@@ -134,6 +135,18 @@ def main():
             udp_count += 1
 
             udp = parse_udp_segment(ip["payload"])
+            print(f"UDP DEBUG: {ip['source_ip']}:{udp['source_port']} → {ip['destination_ip']}:{udp['destination_port']}")
+            # check if this is DNS traffic
+            if udp["destination_port"] == 53 or udp["source_port"] == 53:
+                domain = parse_dns_query(udp["payload"])
+                print(udp["payload"][:40])
+                print(f"DNS RAW LENGTH: {len(udp['payload'])}")
+                print(f"DNS DOMAIN: {domain}")
+
+                if domain:
+                    print(f"DNS QUERY: {domain}")
+
+                
             service = get_service_name(udp["destination_port"])
 
             top_ports[udp["destination_port"]] += 1
