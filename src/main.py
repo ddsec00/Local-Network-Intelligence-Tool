@@ -129,6 +129,19 @@ def main():
             tcp_count += 1
 
             tcp = parse_tcp_segment(ip["payload"])
+
+            if tcp["syn"]:
+                print("TCP FLAG: SYN")
+
+            if tcp["ack"]:
+                print("TCP FLAG: ACK")
+
+            if tcp["rst"]:
+                print("TCP FLAG: RST")
+
+            if tcp["fin"]:
+                print("TCP FLAG: FIN")
+
             service = get_service_name(tcp["destination_port"])
 
             top_ports[tcp["destination_port"]] += 1
