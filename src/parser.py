@@ -65,20 +65,25 @@ def parse_ipv4_packet(data):
 # TCP SEGMENT PARSER
 # =========================================================
 def parse_tcp_segment(data):
-    try:
-        src_port, dst_port = struct.unpack("!HH", data[:4])
 
-        # NOTE: TCP header is at least 20 bytes
-        return {
-            "source_port": src_port,
-            "destination_port": dst_port,
-            "payload": data[20:]
-        }
+    src_port, dst_port = struct.unpack("!HH", data[:4])
 
-    except:
-        return None
+    flags = data[13]
 
+    return {
+        "source_port": src_port,
+        "destination_port": dst_port,
 
+        "fin": bool(flags & 0x01),
+        "syn": bool(flags & 0x02),
+        "rst": bool(flags & 0x04),
+        "psh": bool(flags & 0x08),
+        "ack": bool(flags & 0x10),
+        "urg": bool(flags & 0x20),
+
+        "payload": data[20:]
+    }
+ 
 # =========================================================
 # UDP SEGMENT PARSER
 # =========================================================
