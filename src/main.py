@@ -134,7 +134,7 @@ def main():
             top_ports[tcp["destination_port"]] += 1
             # =====================================================
             # PORT SCAN DETECTION (IMPROVED IDS LOGIC)
-            #
+            # -----------------------------------------------------
             if direction == "IN":
                 source_ip = ip["source_ip"]
                 current_time = time.time()
