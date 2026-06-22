@@ -170,9 +170,9 @@ def main():
 
                 # 5. detection logic 
                 if (
-                    unique_ports >= 8 and      # scanned many ports
+                    unique_ports >= 10 and      # scanned many ports
                     attempts >= 10 and         # enough activity
-                    scan_ratio > 0.7 and       # mostly unique ports → scan pattern
+                    scan_ratio > 0.8 and       # mostly unique ports → scan pattern
                     not tracker["alerted"]     # prevent spam alerts
                 ):
                     print(
