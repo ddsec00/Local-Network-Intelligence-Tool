@@ -175,18 +175,24 @@ def main():
                     scan_ratio > 0.8 and       # mostly unique ports → scan pattern
                     not tracker["alerted"]     # prevent spam alerts
                 ):
-                    print(
-                          f"⚠ PORT SCAN DETECTED from {source_ip} "
-                          f"(unique={unique_ports}, attempts={attempts}, ratio={scan_ratio:.2f})"
+                    ports_list = sorted(tracker["ports"])
+
+                    alert_message = (
+                        f"\n[{time.strftime('%Y-%m-%d %H:%M:%S')}]\n"
+                        f"⚠ PORT SCAN DETECTED\n"
+                        f"Source: {source_ip}\n"
+                        f"Ports: {ports_list}\n"
+                        f"Unique Ports: {unique_ports}\n"
+                        f"Attempts: {attempts}\n"
+                        f"Ratio: {scan_ratio:.2f}\n"
                     )
 
-                    log_packet(
-                        f"PORT SCAN ALERT {source_ip} "
-                        f"unique={unique_ports} attempts={attempts} ratio={scan_ratio:.2f}"
-                    )
+                    print(alert_message)
+
+                    log_packet(alert_message)
 
                     tracker["alerted"] = True
-       
+                    
                 
                 
 
