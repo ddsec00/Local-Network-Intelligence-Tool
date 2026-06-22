@@ -132,38 +132,49 @@ def main():
             service = get_service_name(tcp["destination_port"])
 
             top_ports[tcp["destination_port"]] += 1
-            # port scan detection script
-            source_ip = ip["source_ip"]
-            current_time = time.time()
-            if source_ip not in port_scan_tracker:
-                port_scan_tracker[source_ip] = {
-                    "ports": set(),
-                    "first_seen": current_time,
-                    "alerted": False
-                }
-            # reset if tracking window expired
-            if current_time - port_scan_tracker[source_ip]["first_seen"] > 30:
-                port_scan_tracker[source_ip] = {
-                    "ports": set(),
-                    "first_seen": current_time,
-                    "alerted": False
-                }
-            # adding current destination port 
-            port_scan_tracker[source_ip]["ports"].add(
-                tcp["destination_port"]
-            )
-            # alert only once
-            if (
-                len(port_scan_tracker[source_ip]["ports"]) >= 10
-                and
-                not port_scan_tracker[source_ip]["alerted"]
-            ):
-                print(
-                    f"⚠ ALERT: Possible port scan from "
-                    f"{source_ip} "
-                    f"({len(port_scan_tracker[source_ip]['ports'])} ports)"
+            # port scan detection (incoming traffic only)
+            if direction == "IN":
+                source_ip = ip["source_ip"]
+                current_time = time.time()
+
+                if source_ip not in port_scan_tracker:
+                    port_scan_tracker[source_ip] = {
+                        "ports": set(),
+                        "first_seen": current_time,
+                        "alerted": False
+                    }
+                # reset tracking window after 30 seconds
+                if current_time - port_scan_tracker[source_ip]["first_seen"] > 30:
+                    port_scan_tracker[source_ip] = {
+                        "ports": set(),
+                        "first_seen": current_time,
+                        "alerted": False
+                    }
+                # record destination port being targeted
+                port_scan_tracker[source_ip]["ports"].add(
+                    tcp["destination_port"]
                 )
-                port_scan_tracker[source_ip]["alerted"] = True
+                # trigger alert only once
+                if (
+                    len(port_scan_tracker[source_ip]["ports"]) >= 10 and
+                    not port_scan_tracker[source_ip]["alerted"]
+                ):
+                    print(
+                        f"⚠ ALERT: Possible port scan from "
+                        f"{source_ip} "
+                        f"({len(port_scan_tracker[source_ip]['ports'])} ports)"
+                    )
+                    log_packet(
+                        f"ALERT: Possible port scan from "
+                        f"{source_ip} "
+                        f"({len(port_scan_tracker[source_ip]['ports'])} ports)"
+                    )
+                    port_scan_tracker[source_ip]["alerted"] = True
+
+                        
+                 
+            
+
                 
             
             hostname = resolve_hostname(ip["destination_ip"])
