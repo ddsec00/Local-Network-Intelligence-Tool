@@ -1,6 +1,7 @@
 import socket
 import argparse
 import time
+import netifaces
 from collections import Counter
 
 from sniffer import create_sniffer
@@ -34,6 +35,15 @@ def get_local_ip():
         return s.getsockname()[0]
     finally:
         s.close()
+
+def get_all_local_ips():
+    ips = []
+    for iface in netifaces.interfaces():
+        addrs = netifaces.ifaddresses(iface)
+        if netifaces.AF_INET in addrs:
+            for link in addrs[netifaces.AF_INET]:
+                ips.append(link["addr"])
+    return ips
 
 
 # =========================================================
@@ -133,6 +143,7 @@ def main():
             tcp_count += 1
 
             tcp = parse_tcp_segment(ip["payload"])
+            print(f"DEBUG FLAGS → SYN:{tcp['syn']} ACK:{tcp['ack']} RST:{tcp['rst']} FIN:{tcp['fin']}")
             connection_key = (
                 ip["source_ip"],
                 tcp["source_port"],
@@ -149,24 +160,23 @@ def main():
                       f"CONNECTION TRACKER: "
                       f"{connection_key} -> SYN_SENT"
                 )
-                if tcp["syn"] and tcp["ack"]:
-                    reverse_key = (
-                        ip["destination_ip"],
-                        tcp["destination_port"],
-                        ip["source_ip"],
-                        tcp["source_port"]
+            if tcp["syn"] and tcp["ack"]:
+                reverse_key = (
+                    ip["destination_ip"],
+                    tcp["destination_port"],
+                    ip["source_ip"],
+                    tcp["source_port"]
+                )
+                if reverse_key in connection_tracker:
+                    connection_tracker[reverse_key]["state"] = (
+                        "SYN_ACK_RECEIVED"
                     )
-                    if reverse_key in connection_tracker:
-                        connection_tracker[reverse_key]["state"] = (
-                            "SYN_ACK_RECEIVED"
-                        )
-                        print(
-                             f"CONNECTION TRACKER: "
-                             f"{reverse_key} -> SYN_ACK_RECEIVED"
-                        )
+                    print(
+                         f"CONNECTION TRACKER: "
+                         f"{reverse_key} -> SYN_ACK_RECEIVED"
+                    )
 
                     
-                
             # =====================================================
             # SYN FLOOD DETECTION
             # =====================================================
@@ -184,14 +194,14 @@ def main():
                 
 
                 # reset window after 10 seconds
-                 if current_time - tracker["first_seen"] > 10:
+                 if current_time - tracker["first_seen"] > 5:
                     tracker["syn_count"] = 0
                     tracker["first_seen"] = current_time
                     tracker["alerted"] = False
                  tracker["syn_count"] += 1
                 
                  if (
-                    tracker["syn_count"] >= 100
+                    tracker["syn_count"] >= 20
                     and not tracker["alerted"]
                 ):
                     alert_message = (
@@ -219,6 +229,24 @@ def main():
             service = get_service_name(tcp["destination_port"])
 
             top_ports[tcp["destination_port"]] += 1
+
+            # SYN + ACK (server response)
+            if tcp["syn"] and tcp["ack"] and direction == "IN":
+
+                reverse_key = (
+                    ip["destination_ip"],
+                    tcp["destination_port"],
+                    ip["source_ip"],
+                    tcp["source_port"]
+                )
+
+                if reverse_key in connection_tracker:
+                    connection_tracker[reverse_key]["state"] = "SYN_ACK_RECEIVED"
+
+                    print(
+                        f"CONNECTION TRACKER: "
+                        f"{reverse_key} -> SYN_ACK_RECEIVED"
+                    )
             # =====================================================
             # PORT SCAN DETECTION (IMPROVED IDS LOGIC)
             # -----------------------------------------------------
