@@ -139,6 +139,19 @@ def main():
                 ip["destination_ip"],
                 tcp["destination_port"]
             )
+            if tcp["syn"] and not tcp["ack"]:
+                connection_tracker[connection_key] = {
+                    "state": "SYN_SENT",
+                    "created": time.time()
+                }
+
+                print(
+                      f"CONNECTION TRACKER: "
+                      f"{connection_key} -> SYN_SENT"
+                )
+                
+                    
+                
             # =====================================================
             # SYN FLOOD DETECTION
             # =====================================================
