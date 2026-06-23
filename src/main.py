@@ -121,6 +121,9 @@ def main():
             continue
 
         ip = parse_ipv4_packet(eth["payload"])
+        # ignore localhost traffic for cleaner IDS output
+        if ip["source_ip"].startswith("127.") or ip["destination_ip"].startswith("127."):
+            continue
 
         # track IP stats
         top_sources[ip["source_ip"]] += 1
