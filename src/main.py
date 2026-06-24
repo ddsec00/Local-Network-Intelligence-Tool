@@ -250,6 +250,37 @@ def main():
                         f"CONNECTION TRACKER: "
                         f"{reverse_key} -> SYN_ACK_RECEIVED"
                     )
+
+            # ACK (handshake completed)
+            if (
+                tcp["ack"]
+                and not tcp["syn"]
+                and not tcp["rst"]
+                and not tcp["fin"]
+            ):
+
+                connection_key = (
+                    ip["source_ip"],
+                    tcp["source_port"],
+                    ip["destination_ip"],
+                    tcp["destination_port"]
+                )
+
+                if connection_key in connection_tracker:
+
+                    if (
+                        connection_tracker[connection_key]["state"]
+                        == "SYN_ACK_RECEIVED"
+                    ):
+
+                        connection_tracker[connection_key]["state"] = (
+                            "ESTABLISHED"
+                        )
+
+                        print(
+                            f"CONNECTION TRACKER: "
+                            f"{connection_key} -> ESTABLISHED"
+                        )
             # =====================================================
             # PORT SCAN DETECTION (IMPROVED IDS LOGIC)
             # -----------------------------------------------------
