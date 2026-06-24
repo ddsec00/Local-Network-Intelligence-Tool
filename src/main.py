@@ -258,6 +258,15 @@ def main():
                 and not tcp["rst"]
                 and not tcp["fin"]
             ):
+                print("\n--- ACK DEBUG ---")
+                print(
+                    f"ACK PACKET: "
+                    f"{ip['source_ip']}:{tcp['source_port']} -> "
+                    f"{ip['destination_ip']}:{tcp['destination_port']}"
+                )
+
+                for key in connection_tracker:
+                    print(f"TRACKED: {key}")
 
                 connection_key = (
                     ip["source_ip"],
