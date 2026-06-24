@@ -263,23 +263,28 @@ def main():
 
             top_ports[tcp["destination_port"]] += 1
 
-            # SYN + ACK (server response)
-            if tcp["syn"] and tcp["ack"] and ip["destination_ip"] == local_ip:
+            if tcp["syn"] and tcp["ack"]:
+                if ip["destination_ip"] in local_ips:
 
-                reverse_key = (
-                    ip["destination_ip"],
-                    tcp["destination_port"],
-                    ip["source_ip"],
-                    tcp["source_port"]
-                )
+                    matched_key = None
 
-                if reverse_key in connection_tracker:
-                    connection_tracker[reverse_key]["state"] = "SYN_ACK_RECEIVED"
+                    for key in connection_tracker:
+                        if (
+                            key[0] == ip["source_ip"] and
+                            key[1] == tcp["source_port"] and
+                            key[2] == ip["destination_ip"] and
+                            key[3] == tcp["destination_port"]
+                        ):
+                            matched_key = key
+                            break
 
-                    print(
-                        f"CONNECTION TRACKER: "
-                        f"{reverse_key} -> SYN_ACK_RECEIVED"
-                    )
+                    if matched_key:
+                        connection_tracker[matched_key]["state"] = "SYN_ACK_RECEIVED"
+
+                        print(
+                            f"CONNECTION TRACKER: "
+                            f"{matched_key} -> SYN_ACK_RECEIVED"
+                        )
 
             # ACK (handshake completed)
             if (
