@@ -265,6 +265,8 @@ def main():
                     ip["destination_ip"],
                     tcp["destination_port"]
                 )
+                print(f"ACK KEY: {connection_key}")
+                print(f"KNOWN KEYS: {list(connection_tracker.keys())}")
 
                 if connection_key in connection_tracker:
 
