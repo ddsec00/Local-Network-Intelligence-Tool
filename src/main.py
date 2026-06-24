@@ -264,7 +264,7 @@ def main():
             top_ports[tcp["destination_port"]] += 1
 
             # SYN + ACK (server response)
-            if tcp["syn"] and tcp["ack"] and direction == "IN":
+            if tcp["syn"] and tcp["ack"] and ip["destination_ip"] == local_ip:
 
                 reverse_key = (
                     ip["destination_ip"],
