@@ -208,6 +208,12 @@ def main():
 
                     print(alert_message)
                     log_packet(alert_message)
+                    event_log.append({
+                        "time": time.strftime("%H:%M:%S"),
+                        "event": "SYN_FLOOD",
+                        "source": source_ip,
+                        "count": tracker["syn_count"]
+                    })
                     tracker["alerted"] = True
 
             # =====================================================
