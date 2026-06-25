@@ -331,6 +331,12 @@ def main():
                     print(alert_message)
 
                     log_packet(alert_message)
+                    event_log.append({
+                        "time": time.strftime("%H:%M:%S"),
+                        "event": "PORT_SCAN",
+                        "source": source_ip,
+                        "ports": unique_ports
+                    })
 
                     tracker["alerted"] = True
                     
