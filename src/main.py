@@ -178,6 +178,7 @@ def main():
                         "dport": tcp["destination_port"],
                         "time": time.time()
                     })
+                    print("EVENT LOG SIZE:", len(event_log))
 
 
             # =====================================================
@@ -235,6 +236,7 @@ def main():
                             "dport": tcp["destination_port"],
                             "time": time.time()
                         })
+                        print("EVENT LOG SIZE:", len(event_log))
 
             # =====================================================
             # ACK (final handshake → ESTABLISHED)
@@ -253,6 +255,7 @@ def main():
                             "dport": tcp["destination_port"],
                             "time": time.time()
                         })
+                        print("EVENT LOG SIZE:", len(event_log))
 
             # =====================================================
             # FLAGS DEBUG (optional but clean)
