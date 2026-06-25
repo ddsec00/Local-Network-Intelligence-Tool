@@ -149,35 +149,8 @@ def main():
             current_time = time.time()
             print(f"DEBUG FLAGS → SYN:{tcp['syn']} ACK:{tcp['ack']} RST:{tcp['rst']} FIN:{tcp['fin']}")
 
-            # =====================================================
-            # CONNECTION ESTABLISHED DETECTION (ACK FINAL STEP)
-            # =====================================================
-            if tcp["ack"] and not tcp["syn"]:
-
-                forward_key = (
-                    ip["source_ip"],
-                    tcp["source_port"],
-                    ip["destination_ip"],
-                    tcp["destination_port"]
-                )
-
-                reverse_key = (
-                    ip["destination_ip"],
-                    tcp["destination_port"],
-                    ip["source_ip"],
-                    tcp["source_port"]
-                )
-
-                if reverse_key in connection_tracker:
-
-                    if connection_tracker[reverse_key]["state"] == "SYN_ACK_RECEIVED":
-
-                        connection_tracker[reverse_key]["state"] = "ESTABLISHED"
-
-                        print(
-                            f"CONNECTION TRACKER: "
-                            f"{reverse_key} -> ESTABLISHED"
-                        )
+            
+                        
             connection_key = (
                 ip["source_ip"],
                 tcp["source_port"],
@@ -195,21 +168,7 @@ def main():
                       f"CONNECTION TRACKER: "
                       f"{connection_key} -> SYN_SENT"
                 )
-            if tcp["syn"] and tcp["ack"]:
-                reverse_key = (
-                    ip["destination_ip"],
-                    tcp["destination_port"],
-                    ip["source_ip"],
-                    tcp["source_port"]
-                )
-                if reverse_key in connection_tracker:
-                    connection_tracker[reverse_key]["state"] = (
-                        "SYN_ACK_RECEIVED"
-                    )
-                    print(
-                         f"CONNECTION TRACKER: "
-                         f"{reverse_key} -> SYN_ACK_RECEIVED"
-                    )
+            
 
                     
             # =====================================================
@@ -335,10 +294,7 @@ def main():
                                 f"{reverse_key} -> ESTABLISHED"
                             )
 
-                        print(
-                            f"CONNECTION TRACKER: "
-                            f"{connection_key} -> ESTABLISHED"
-                        )
+                       
             # =====================================================
             # PORT SCAN DETECTION (IMPROVED IDS LOGIC)
             # -----------------------------------------------------
