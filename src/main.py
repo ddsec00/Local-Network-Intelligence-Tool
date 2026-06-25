@@ -146,6 +146,7 @@ def main():
             tcp_count += 1
 
             tcp = parse_tcp_segment(ip["payload"])
+            current_time = time.time()
             print(f"DEBUG FLAGS → SYN:{tcp['syn']} ACK:{tcp['ack']} RST:{tcp['rst']} FIN:{tcp['fin']}")
 
             # =====================================================
@@ -186,7 +187,8 @@ def main():
             if tcp["syn"] and not tcp["ack"]:
                 connection_tracker[connection_key] = {
                     "state": "SYN_SENT",
-                    "created": time.time()
+                    "created": time.time(),
+                    "last_seen": time.time()
                 }
 
                 print(
