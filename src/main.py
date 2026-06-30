@@ -334,18 +334,6 @@ def main():
                     tracker["alerted"] = True
                     
                 
-                
-
-                    
-                
-
-                
-
-                        
-                 
-            
-
-                
             
             hostname = resolve_hostname(ip["destination_ip"])
 
