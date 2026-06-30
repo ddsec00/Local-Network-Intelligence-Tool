@@ -169,6 +169,11 @@ def main():
                         "created": time.time()
                     }
                     print(f"CONNECTION TRACKER: {forward_key} -> SYN_SENT")
+                    event_log.append({
+                        "time": time.strftime("%H:%M:%S"),
+                        "event": "SYN_SENT",
+                        "connection": str(forward_key)
+                    })
                     
 
 
