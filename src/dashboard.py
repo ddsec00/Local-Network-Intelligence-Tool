@@ -14,6 +14,17 @@ latest_data = {
     "connections": {},      # Active connection details
     "stats": {}            # Various statistics and counters
 }
+###--------------------------------------------____###########
+#####################__ MAIN PAGE ___#######################
+
+@app.route("/")
+def home():
+    return render_template(
+        "index.html",
+        stats=latest_data.get("stats", {}),
+        events=latest_data.get("events", []),
+        connections=latest_data.get("connections", {})
+    )
 
 
 # ----------------------------------------------------
@@ -24,6 +35,7 @@ latest_data = {
 # request to this URL:
 # http://127.0.0.1:5000/update
 # ----------------------------------------------------
+
 @app.route("/update", methods=["POST"])
 def update():
 
@@ -51,6 +63,22 @@ def data():
 
     return jsonify(latest_data)
 
+
+
+#### EVENTS PAGE ############################
+@app.route("/api/events")
+def api_events():
+    return jsonify(latest_data.get("events", []))
+
+##### CONNECTIONS PAGE ############################
+@app.route("/api/connections")
+def api_connections():
+    return jsonify(latest_data.get("connections", {}))
+
+##### STATS PAGE ############################
+@app.route("/api/stats")
+def api_stats():
+    return jsonify(latest_data.get("stats", {}))
 
 # ----------------------------------------------------
 # Fire up the Flask server and start listening
