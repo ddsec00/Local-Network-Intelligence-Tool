@@ -71,10 +71,15 @@ def resolve_hostname(ip):
 # Send the latest IDS data to the Flask dashboard
 # =========================================================
 def send_dashboard_update(events, connections, stats):
+    # Convert tuple keys into strings so JSON can send them.
+    serializable_connections = {}
+
+    for key, value in connections.items():
+        serializable_connections[str(key)] = value
 
     payload = {
         "events": events,
-        "connections": connections,
+        "connections": serializable_connections,
         "stats": stats
     }
 
